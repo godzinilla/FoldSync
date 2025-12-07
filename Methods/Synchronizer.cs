@@ -9,7 +9,10 @@
 		#endregion
 
 		#region variables
-		public DateTime jobStartDT = new DateTime();
+		public DateTime syncStartDT = new DateTime();
+		public DateTime cleanStartDT = new DateTime();
+		public DateTime syncEndDT = new DateTime();
+		public DateTime cleanEndDT = new DateTime();
 		#endregion
 
 		#region methods
@@ -32,8 +35,8 @@
 			#endregion
 
 			commonTools.PrintMessage(Environment.NewLine + ".------------------------------------S-Y-N-C--P-R-O-C-E-S-S--S-T-A-R-T-----------------------------------.");
-			jobStartDT = DateTime.Now;
-			logger.GenerateCommonLog("INFO", "OK", "start", String.Join("", "job started, start time:", jobStartDT.ToString("HH:mm:ss:ffff")), console: true, file: true);
+			syncStartDT = DateTime.Now;
+			logger.GenerateCommonLog("INFO", "OK", "start", String.Join("", "task started at ", syncStartDT.ToString("HH:mm:ss:ffff")), console: true, file: true);
 			for (int i = 0; i < sourceFiles.Length / 4; i++)
             {
 				//check if file is an empty directory (empty directory has empty hash code)
@@ -56,11 +59,11 @@
 							}
 							catch (Exception ex)
 							{
-								logger.GenerateFileLog("WARNING", "RETRY", "create", targetDir, sourceFiles[i, 1], ex);
+								logger.GenerateFileLog("WARN", "RETRY", "create", targetDir, sourceFiles[i, 1], ex);
 								count++;
 								if (count == 4)
 								{
-									logger.GenerateFileLog("ERROR", "FAIL", "create", targetDir, sourceFiles[i, 1], ex);
+									logger.GenerateFileLog("ERR", "FAIL", "create", targetDir, sourceFiles[i, 1], ex);
 									success = false;
 								}
 							}
@@ -114,11 +117,11 @@
 								}
 								catch (Exception ex)
 								{
-									logger.GenerateFileLog("WARNING", "RETRY", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+									logger.GenerateFileLog("WARN", "RETRY", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 									count++;
 									if (count == 4)
 									{
-										logger.GenerateFileLog("ERROR", "FAIL", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+										logger.GenerateFileLog("ERR", "FAIL", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 										success = false;
 									}
 								}
@@ -167,11 +170,11 @@
 							}
 							catch (Exception ex)
 							{
-								logger.GenerateFileLog("WARNING", "RETRY", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+								logger.GenerateFileLog("WAR", "RETRY", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 								count++;
 								if (count == 4)
 								{
-									logger.GenerateFileLog("ERROR", "FAIL", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+									logger.GenerateFileLog("ERR", "FAIL", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 									success = false;
 								}
 							}
@@ -219,11 +222,11 @@
 							}
 							catch (Exception ex)
 							{
-								logger.GenerateFileLog("WARNING", "RETRY", "create", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+								logger.GenerateFileLog("WARN", "RETRY", "create", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 								count++;
 								if (count == 4)
 								{
-									logger.GenerateFileLog("ERROR", "FAIL", "create", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+									logger.GenerateFileLog("ERR", "FAIL", "create", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 									success = false;
 								}
 							}
@@ -245,11 +248,11 @@
 							}
 							catch (Exception ex)
 							{
-								logger.GenerateFileLog("WARNING", "RETRY", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+								logger.GenerateFileLog("WARN", "RETRY", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 								count++;
 								if (count == 4)
 								{
-									logger.GenerateFileLog("ERROR", "FAIL", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+									logger.GenerateFileLog("ERR", "FAIL", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 									success = false;
 								}
 							}
@@ -301,11 +304,11 @@
 									}
 									catch (Exception ex)
 									{
-										logger.GenerateFileLog("WARNING", "RETRY", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+										logger.GenerateFileLog("WARN", "RETRY", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 										count++;
 										if (count == 4)
 										{
-											logger.GenerateFileLog("ERROR", "FAIL", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+											logger.GenerateFileLog("ERR", "FAIL", "replace", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 											success = false;
 										}
 									}
@@ -354,11 +357,11 @@
 								}
 								catch (Exception ex)
 								{
-									logger.GenerateFileLog("WARNING", "RETRY", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+									logger.GenerateFileLog("WARN", "RETRY", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 									count++;
 									if (count == 4)
 									{
-										logger.GenerateFileLog("ERROR", "FAIL", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
+										logger.GenerateFileLog("ERR", "FAIL", "copy", sourceFiles[i, 0], sourceFiles[i, 1], ex);
 										success = false;
 									}
 								}
@@ -392,8 +395,9 @@
 					}
 				}
 			}
+			syncEndDT = DateTime.Now;
+			logger.GenerateCommonLog("INFO", "OK", "end", String.Join("", "task ended at ", syncEndDT.ToString("HH:mm:ss:ffff")), console: true, file: true);
 			commonTools.PrintMessage(Environment.NewLine + ".--------------------------------------S-Y-N-C--P-R-O-C-E-S-S--E-N-D-------------------------------------.");
-
 			CleanUp(sourcePath, targetPath);
 		}
 
@@ -410,9 +414,9 @@
 			DirectoryInfo[] sourceDirectories, targetDirectories;
 			FileInfo[] sourceFiles, targetFiles;
 			#endregion
-
+			cleanStartDT = DateTime.Now;
 			commonTools.PrintMessage(Environment.NewLine + ".-------------------------------C-L-E-A-N-I-N-G--P-R-O-C-E-S-S--S-T-A-R-T--------------------------------.");
-
+			logger.GenerateCommonLog("INFO", "OK", "start", String.Join("", "cleaning task start at ", cleanStartDT.ToString("HH:mm:ss:ffff")), console: true, file: true);
 			//get all directories and files from both source and target paths
 			directoryInfoSource = new DirectoryInfo(sourcePath);
 			sourceDirectories = directoryInfoSource.GetDirectories("*", SearchOption.AllDirectories);
@@ -436,11 +440,11 @@
 						}
 						catch (Exception ex)
 						{
-							logger.GenerateFileLog("WARNING", "RETRY", "delete", targetFile.Name, sourcePath, ex);
+							logger.GenerateFileLog("WARN", "RETRY", "delete", targetFile.Name, sourcePath, ex);
 							count++;
 							if (count == 4)
 							{
-								logger.GenerateFileLog("ERROR", "FAIL", "delete", targetFile.Name, sourcePath, ex);
+								logger.GenerateFileLog("ERR", "FAIL", "delete", targetFile.Name, sourcePath, ex);
 							}
 						}
 					}
@@ -468,11 +472,11 @@
 						}
 						catch (Exception ex)
 						{
-							logger.GenerateFileLog("WARNING", "RETRY", "delete", targetDirectory.Name, sourcePath, ex);
+							logger.GenerateFileLog("WARN", "RETRY", "delete", targetDirectory.Name, sourcePath, ex);
 							count++;
 							if (count == 4)
 							{
-								logger.GenerateFileLog("ERROR", "FAIL", "delete", targetDirectory.Name, sourcePath, ex);
+								logger.GenerateFileLog("ERR", "FAIL", "delete", targetDirectory.Name, sourcePath, ex);
 							}
 						}
 					}
@@ -480,6 +484,8 @@
 					count = 0;
 				}
 			}
+			cleanEndDT = DateTime.Now;
+			logger.GenerateCommonLog("INFO", "OK", "end", String.Join("", "cleaning task end at ", cleanEndDT.ToString("HH:mm:ss:ffff")), console: true, file: true);
 			commonTools.PrintMessage(Environment.NewLine + ".---------------------------------C-L-E-A-N-I-N-G--P-R-O-C-E-S-S--E-N-D----------------------------------.");
 		}
 
