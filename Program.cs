@@ -42,7 +42,7 @@ namespace FoldSync
 			#region main program
 
 			#region LOG directory
-			logger.GenerateCommonLog("INFO", "OK", "start", message: "application start", console: true, file: true);
+			logger.GenerateCommonLog("INFO", "OK", "start", message: "application start", console: true, file: false);
 			commonTools.PrintMessage(Environment.NewLine + ".-------------------------------------------------L-O-G-------------------------------------------------.");
 			commonTools.PrintMessage("Please provide absolute path to directory where the log file should be created:");
 			logger.CreateLogFile();
@@ -71,24 +71,24 @@ namespace FoldSync
 				{
 					if (schedulerTime == 0)
 					{
-						commonTools.PrintMessage("Scheduler has not been set, the task will be performed one time");
 						logger.GenerateCommonLog("INFO", "OK", "scheduler", "scheduler not set", console: true, file: true);
+						commonTools.PrintMessage("Scheduler has not been set, the task will be performed one time");
 					}
 					else if (schedulerTime < 0)
 					{
-						commonTools.PrintMessage($"Negative value cannot be use to set scheduler time, please enter the value again:");
 						logger.GenerateCommonLog("ERROR", "RETRY", "scheduler", "negative number entered", console: true, file: true);
+						commonTools.PrintMessage($"Negative value cannot be use to set scheduler time, please enter the value again:");
 					}
 					else
 					{
-						commonTools.PrintMessage($"Scheduler has been set, the task will be performed each '{schedulerTime}' minutes.");
 						logger.GenerateCommonLog("INFO", "OK", "scheduler", $"scheduler set to '{schedulerTime}' minutes", console: true, file: true);
+						commonTools.PrintMessage($"Scheduler has been set, the task will be performed each '{schedulerTime}' minutes.");
 					}
 				}
 				else
 				{
-					commonTools.PrintMessage($"'{result}' is not a valid number, please enter the value again.");
 					logger.GenerateCommonLog("ERROR", "RETRY", "scheduler", "invalid number entered", console: true, file: true);
+					commonTools.PrintMessage($"'{result}' is not a valid number, please enter the value again.");
 					schedulerTime = -1;
 				}
 			} while (schedulerTime < 0);
@@ -106,7 +106,7 @@ namespace FoldSync
 				if (schedulerTime == 0)
 					break;
 
-				commonTools.PrintMessage(Environment.NewLine + ".-------------------------------------W-A-I-T-I-N-G--F-O-R--N-E-X-T--R-U-N------------------------------------.");
+				commonTools.PrintMessage(Environment.NewLine + ".----------------------------------W-A-I-T-I-N-G--F-O-R--N-E-X-T--R-U-N----------------------------------.");
 				commonTools.PrintMessage("Please press [Enter] to start next synchronization cycle or [Esc] to close the application.");
 				commonTools.PrintMessage(System.String.Join("", "Next synchronization cycle will start in ", schedulerTime, " minutes automatically (at ", DateTime.Now.AddMinutes(schedulerTime).ToString("HH:mm:ss"), ")"));
 				var delayTask = synchronizer.WaitForNextRun(schedulerTime, dtNow);
@@ -128,11 +128,10 @@ namespace FoldSync
 
 			#region ending
 			TimeSpan timeAmount = new TimeSpan();
-            timeAmount = DateTime.Now - synchronizer.jobStartDT;
-
-			logger.GenerateCommonLog("INFO", "OK", "end", System.String.Join(" ", "job completed, job take", tempStr), console: true, file: true);
+            timeAmount = DateTime.Now - synchronizer.syncStartDT;
 			tempStr = commonTools.ConvertTimeSpanToString(timeAmount);
-			commonTools.PrintMessage($"Current run of the job ended. Please [Esc] key to close the aplication.");
+			logger.GenerateCommonLog("INFO", "OK", "end", System.String.Join(" ", "task completed, task take", tempStr), console: true, file: true);
+			commonTools.PrintMessage($"Current run of the task ended. Please [Esc] key to close the aplication.");
 			while (true)
 			{
 				var keyInfo = Console.ReadKey(intercept: true);
