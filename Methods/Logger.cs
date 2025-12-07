@@ -55,9 +55,9 @@
 				//confirming log file creation
 				if (File.Exists(logFilePath))
 				{
-					commonTools.PrintMessage($"LOG file '{logFileName}' {(newFileCreated ? "has been created" : "already exists")} in directory '{logFolderPath}'");
-					this.GenerateCommonLog("INFO", "OK", "start", "program started", "", console: true, file: true);
+					this.GenerateCommonLog("INFO", "OK", "start", "program started", "", console: false, file: true);
 					this.GenerateCommonLog("INFO", newFileCreated ? "OK" : "SKIP", "create", newFileCreated ? "log: file created" : "log: file exists", logFilePath, console: true, file: true);
+					commonTools.PrintMessage($"LOG file '{logFileName}' {(newFileCreated ? "has been created" : "already exists")} in directory '{logFolderPath}'");
 				}
 			}
 			while (!File.Exists(logFilePath));
@@ -67,7 +67,7 @@
 		/// Generate log entry for file operations
 		/// </summary>
 		/// <param name="level">Log level</param>
-		/// <param name="status">Job status</param>
+		/// <param name="status">Task status</param>
 		/// <param name="action">Performed action</param>
 		/// <param name="fileName">File name</param>
 		/// <param name="dir">Directory</param>
@@ -114,7 +114,7 @@
 		/// Generate common log entry
 		/// </summary>
 		/// <param name="level">Log level</param>
-		/// <param name="status">Job status</param>
+		/// <param name="status">Task status</param>
 		/// <param name="action">Performed action</param>
 		/// <param name="message">Custom message</param>
 		/// <param name="directory">Directory, default empty</param>
