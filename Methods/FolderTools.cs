@@ -21,9 +21,9 @@ namespace FoldSync.Methods
 			//check if given path is not empty
 			if (string.IsNullOrWhiteSpace(path))
             {
+				if (generateLog) logger.GenerateCommonLog("WARN", "RETRY", "input", "empty path provided", path, console: true, file: true);
 				commonTools.PrintMessage("Empty path is not a correct path!");
 				commonTools.PrintMessage("Please provide the full path again:");
-				if (generateLog) logger.GenerateCommonLog("WARNING", "RETRY", "input", "empty path provided", path, console: true, file: true);
 				return false;
             }
 			//check if directory exists
@@ -47,14 +47,15 @@ namespace FoldSync.Methods
                 var input = Console.ReadKey(true);
 				if (input.Key == ConsoleKey.Escape)
 				{
+					if (generateLog) logger.GenerateCommonLog("INFO", "OK", "input", "retrying entry", path, console: true, file: true);
 					commonTools.PrintMessage("# [Esc] key has been pressed #");
 					commonTools.PrintMessage("Please provide the full path again:");
-					if (generateLog) logger.GenerateCommonLog("INFO", "OK", "input", "retrying entry", path, console: true, file: true);
 					return false;
 				}
 				else
 				{
 					if (generateLog) logger.GenerateCommonLog("INFO", "OK", "input", "path selected", path, console: true, file: true);
+					commonTools.PrintMessage($"Path '{path}' will be used.");
 					return true;
 				}
             }
@@ -70,9 +71,9 @@ namespace FoldSync.Methods
 			//check if given path is not empty
 			if (string.IsNullOrWhiteSpace(path))
             {
+				logger.GenerateCommonLog("WARN", "RETRY", "input", "empty path", path, console: true, file: true);
 				commonTools.PrintMessage("Empty path is not a correct path!");
 				commonTools.PrintMessage("Please provide the full path again:");
-				logger.GenerateCommonLog("WARNING", "RETRY", "input", "empty path", path, console: true, file: true);
 				return false;
             }
 
@@ -82,9 +83,9 @@ namespace FoldSync.Methods
 				//check if directory exists - not existing directroy is not allowed for a source path
                 if (!Directory.Exists(path))
                 {
+					logger.GenerateCommonLog("WARN", "RETRY", "input", "path does not exists", path, console: true, file: true);
 					commonTools.PrintMessage($"Given path '{path}' does not exists!");
 					commonTools.PrintMessage("Please provide the full path again:");
-					logger.GenerateCommonLog("WARNING", "RETRY", "input", "path does not exists", path, console: true, file: true);
 					return false;
                 }
                 else
@@ -94,14 +95,15 @@ namespace FoldSync.Methods
                     var input = Console.ReadKey(true);
                     if (input.Key == ConsoleKey.Escape)
                     {
-                        commonTools.PrintMessage("# [Esc] key has been pressed #");
-                        commonTools.PrintMessage("Please provide the full path again:");
 						logger.GenerateCommonLog("INFO", "OK", "input", "retrying entry", path, console: true, file: true);
+						commonTools.PrintMessage("# [Esc] key has been pressed #");
+                        commonTools.PrintMessage("Please provide the full path again:");
 						return false;
                     }
                     else
                     {
 						logger.GenerateCommonLog("INFO", "OK", "input", "path selected", path, console: true, file: true);
+						commonTools.PrintMessage($"Path '{path}' will be used.");
 						return true;
                     }
                 }
@@ -109,9 +111,9 @@ namespace FoldSync.Methods
             else
             {
 				//incorrect path provided
+				logger.GenerateCommonLog("WARN", "RETRY", "input", "incorrect path", path, console: true, file: true);
 				commonTools.PrintMessage($"Given path '{path}' is incorrect!");
 				commonTools.PrintMessage("Please provide the correct path again:");
-				logger.GenerateCommonLog("WARNING", "RETRY", "input", "incorrect path", path, console: true, file: true);
 				return false;
             }
         }
@@ -127,36 +129,36 @@ namespace FoldSync.Methods
 			//check if given path is not empty
 			if (string.IsNullOrWhiteSpace(path))
             {
+				//the generateLog statemen is used not print the log message to a file when the file not exists yet (eg. in Logger.CreateLogFile method) 
+				if (generateLog) logger.GenerateCommonLog("WARN", "RETRY", "verify", "incorrect path provided", path, console: true, file: true);
 				//the showMessage statement is used to preventing duplicating the messages on console
-                if (showMessage)
+				if (showMessage)
                 {
 					commonTools.PrintMessage($"Given path '{path}' is incorrect!");
 					commonTools.PrintMessage("Please provide the correct path again:");
 				}
-				//the generateLog statemen is used not print the log message to a file when the file not exists yet (eg. in Logger.CreateLogFile method) 
-				if (generateLog) logger.GenerateCommonLog("WARNING", "RETRY", "verify", "incorrect path provided", path, console: true, file: true);
 				return false;
             }
 			//check if given path is no a network path
             if (path.StartsWith(@"\\", StringComparison.OrdinalIgnoreCase))
             {
-                if (showMessage)
+				if (generateLog) logger.GenerateCommonLog("WARN", "RETRY", "verify", "network path provided", path, console: true, file: true);
+				if (showMessage)
                 {
 					commonTools.PrintMessage($"Given path '{path}' is incorrect! Network paths are not supported.");
 					commonTools.PrintMessage("Please provide the correct path again:");
 				}
-				if (generateLog) logger.GenerateCommonLog("WARNING", "RETRY", "verify", "network path provided", path, console: true, file: true);
 				return false;
             }
 			//check that the given path is absolute to avoid creating the folder in an unintended directory eg. where the program is executed
 			if (path.Length < 3 || path[1] != ':' || (path[2] != '\\' && path[2] != '/'))
             {
-                if (showMessage)
+				if (generateLog) logger.GenerateCommonLog("WARN", "RETRY", "verify", "non-absolute path provided", path, console: true, file: true);
+				if (showMessage)
                 {
 					commonTools.PrintMessage($"Given path '{path}' is incorrect! Use absolute path like 'drive_letter:\\folder1\\folder2'.");
 					commonTools.PrintMessage("Please provide the correct path again:");
 				}
-				if (generateLog) logger.GenerateCommonLog("WARNING", "RETRY", "verify", "non-absolute path provided", path, console: true, file: true);
 				return false;
             }
 
@@ -171,12 +173,12 @@ namespace FoldSync.Methods
             }
             else
             {
-                if (showMessage)
+				if (generateLog) logger.GenerateCommonLog("WARN", "RETRY", "verify", "incorrect drive provided", path, console: true, file: true);
+				if (showMessage)
                 {
 					commonTools.PrintMessage($"Given path '{path}' contains drive letter which does not exists in the system!");
 					commonTools.PrintMessage("Please provide the correct path again:");
 				}
-				if (generateLog) logger.GenerateCommonLog("WARNING", "RETRY", "verify", "incorrect drive provided", path, console: true, file: true);
 				return false;
             }
         }
@@ -193,15 +195,15 @@ namespace FoldSync.Methods
             try
             {
                 dirInfo.Create();
-                commonTools.PrintMessage($"Directory '{path}' has been created");
 				if (generateLog) logger.GenerateCommonLog("INFO", "OK", "create", "directory created", path, console: true, file: true);
+				commonTools.PrintMessage($"Directory '{path}' has been created");
 				return true;
             }
             catch (Exception ex)
             {
-                commonTools.PrintMessage($"Given path '{path}' caused the following exception: '{ex.Message}'!");
+				if (generateLog) logger.GenerateCommonLog("WARN", "RETRY", "create", "fail to create directory", path, ex, console: true, file: true);
+				commonTools.PrintMessage($"Given path '{path}' caused the following exception: '{ex.Message}'!");
                 commonTools.PrintMessage("Please provide other path:");
-				if (generateLog) logger.GenerateCommonLog("WARNING", "RETRY", "create", "fail to create directory", path, ex, console: true, file: true);
 				return false;
             }
 		}
