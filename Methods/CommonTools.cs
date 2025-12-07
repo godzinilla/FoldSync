@@ -24,9 +24,10 @@ namespace FoldSync.Methods
         {
             Logger logger = new Logger();
             var userInput = new StringBuilder();
-            while (true)
+			this.PrintMessage("> ", writeLine: false);
+			while (true)
             {
-                var pressedKey = Console.ReadKey(intercept: true);
+				var pressedKey = Console.ReadKey(intercept: true);
 				//Check if pressed key is ESC - if so, close application (only on empty lines)
 				if (pressedKey.Key == ConsoleKey.Escape)
                 {
